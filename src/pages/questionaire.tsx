@@ -1,4 +1,4 @@
-import { Box, CircularProgress, FormControl, FormControlLabel, FormLabel, makeStyles, Radio, RadioGroup } from '@material-ui/core';
+import { Box, CircularProgress, FormControl, FormControlLabel, FormLabel, makeStyles, Radio, RadioGroup, Typography } from '@material-ui/core';
 import React from "react";
 import { QuestionDTO } from "../data/QuestionDTO";
 import { useQuizContext } from "../hooks/useQuizContext";
@@ -29,12 +29,15 @@ export const Questionaire = () => {
 
   return <Box>
     {processing || !currentQuestion ? <CircularProgress></CircularProgress> : (
+      <Box>
+        <Typography variant="h5">{`Question ${currentQuestionIdx + 1}`}</Typography>
       <FormControl component="fieldset" className={classes.formControl}>
         <FormLabel component="legend">{currentQuestion?.question}</FormLabel>
         <RadioGroup value={null} onChange={handleAnswer}>
           {answers.map((answer, index) => <FormControlLabel key={`${answer}-${index}`}value={answer} control={<Radio />} label={answer} />)}
         </RadioGroup>
       </FormControl>
+      </Box>
     )}
   </Box>
 };
