@@ -27,7 +27,7 @@ export const Questionaire = () => {
     setProcessing(false);
   }
 
-  return <Box>
+  return <>
     {processing || !currentQuestion ? <CircularProgress></CircularProgress> : (
       <Box>
         <Typography variant="h5">{`Question ${currentQuestionIdx + 1}`}</Typography>
@@ -39,7 +39,7 @@ export const Questionaire = () => {
       </FormControl>
       </Box>
     )}
-  </Box>
+  </>
 };
 
 const shuffleAnswers = (answers: any[]) => answers.sort( () => .5 - Math.random() );
