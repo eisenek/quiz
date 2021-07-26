@@ -3,10 +3,10 @@ import React from 'react';
 import { useQuizContext } from '../hooks/useQuizContext';
 
 export const Scores = () => {
-  const {state} = useQuizContext();
+  const {state, dispatch} = useQuizContext();
 
-  return <Box>
-    <Typography variant="body1">{`Your score is ${state.answerCollection.filter(answer => answer)?.length} / ${state.answerCollection.length}`}</Typography>
-    <Button>Start again</Button>
+  return <Box lineHeight="5em">
+    <Typography variant="h5">{`Your score is ${state.answerCollection.filter(answer => answer)?.length} / ${state.answerCollection.length}`}</Typography>
+    <Button color="primary" variant="contained" onClick={() => dispatch({type: 'reset'})}>Start again</Button>
   </Box>
 }

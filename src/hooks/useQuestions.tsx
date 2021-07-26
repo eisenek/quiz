@@ -7,17 +7,16 @@ export const useQuestions = (difficulty: DifficultyLevel, onQuestionsLoaded: (qu
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    console.log(difficulty)
     async function getQuestions() {
         setLoading(true)
-        const url = `https://opentdb.com/api.php?amount=${CONFIG_NO_QUESTIONS}&amp;difficulty=${difficulty}&amp;type=boolean`;
+        const url = `https://opentdb.com/api.php?amount=${CONFIG_NO_QUESTIONS}&amp;difficulty=${difficulty}&amp;type=boolean&encode=base64`;
         const response = await fetch(url);
         if(!response.ok) {
           const error = await handleError(response);
           throw new Error(error?.message || error)
         }
         const {results} = await response.json();
-        onQuestionsLoaded ? onQuestionsLoaded(results) : setQuestions(results);
+        onQuestionsLoaded ? onQuestionsLoaded(normalizeQuestions(results)) : setQuestions(results);
         setLoading(false);
     }
 
@@ -30,6 +29,8 @@ export const useQuestions = (difficulty: DifficultyLevel, onQuestionsLoaded: (qu
 
   return {loading, questions}
 }
+
+const normalizeQuestions = (questions: any) => questions.map((question: QuestionDTO) => Object.fromEntries(Object.entries(question).map(([key, value]) => [key, Array.isArray(value) ? value.map(val => atob(val)) : atob(value as string)])))
 
 const handleError = async (error: Response) => {
   try {

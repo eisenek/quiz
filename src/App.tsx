@@ -1,4 +1,4 @@
-import { Container } from '@material-ui/core';
+import { Container, makeStyles } from '@material-ui/core';
 import React from 'react';
 import './App.css';
 import { Quiz } from './components/Quiz.component';
@@ -8,17 +8,22 @@ export const CONFIG_DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
 export const CONFIG_NO_QUESTIONS = 10
 export type DifficultyLevel = typeof CONFIG_DIFFICULTIES[number] | null;
 
+const useStyles = makeStyles(theme => ({
+  appSpacing: {
+    padding: theme.spacing(2)
+  }
+}))
+
 function App() {
-  
+  const classes = useStyles();
   return (
     <div className="App">
-      <Container component="div" fixed>
+      <Container className={classes.appSpacing} maxWidth="lg">
         <QuizContextProvider>
           <Quiz />
         </QuizContextProvider>
       </Container>
-
-    </div>
+      </div>
   );
 }
 

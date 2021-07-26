@@ -10,6 +10,9 @@ export type Action =
   | {
       type: "addAnswer";
       payload: State["answerCollection"][number];
+    }
+  | {
+      type: "reset";
     };
 export type Dispatch = (action: Action) => void;
 export type State = {
@@ -22,6 +25,12 @@ export type QuizContextValueType = {
   dispatch: Dispatch;
 };
 
+const initialState = {
+  difficulty: null,
+  questionCollection: [],
+  answerCollection: []
+}
+
 const quizReducer = (state: State, action: Action | any) => {
   switch (action.type) {
     case "setDifficulty": {
@@ -33,6 +42,9 @@ const quizReducer = (state: State, action: Action | any) => {
     case "addAnswer": {
       const newAnswerCollection = [...state.answerCollection, action.payload];
       return { ...state, answerCollection: newAnswerCollection };
+    }
+    case "reset": {
+      return initialState
     }
     default: {
       throw new Error(
