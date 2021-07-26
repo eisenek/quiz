@@ -29,7 +29,7 @@ export const Difficulty: React.FC<{}> = (props) => {
           <Select
             labelId="difficulty-label"
             placeholder="Difficulty"
-            value={state.difficulty}
+            value={state.difficulty || ""}
             onChange={(e) =>
               dispatch({
                 type: "setDifficulty",

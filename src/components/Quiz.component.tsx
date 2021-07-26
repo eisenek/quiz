@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Fade, makeStyles, Paper } from "@material-ui/core";
 import Alert from '@material-ui/lab/Alert';
-import useErrorBoundary from "use-error-boundary";
+import { ErrorObject } from "use-error-boundary/lib/ErrorBoundary";
 import { CONFIG_NO_QUESTIONS } from "../App";
 import { QuestionDTO } from "../data/QuestionDTO";
 import { useQuestions } from "../hooks/useQuestions";
@@ -17,13 +17,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Quiz = (): JSX.Element | null => {
+type Props = {
+  error?: ErrorObject
+}
+
+export const Quiz: React.FC<Props> = (props): JSX.Element | null => {
   const classes = useStyles();
-  const {ErrorBoundary} = useErrorBoundary();
   const { state, dispatch } = useQuizContext();
   const questionsLoadedCallback = (questions: QuestionDTO[]) =>
     dispatch({ type: "setQuestionCollection", payload: questions });
-  const { loading } = useQuestions(state.difficulty, questionsLoadedCallback);
+  const difficulty = props.error ? null : state.difficulty;
+  const { loading, error } = useQuestions(difficulty, questionsLoadedCallback);
   let children = (
     <Fade in={true}>
       <CircularProgress />
@@ -32,6 +36,12 @@ export const Quiz = (): JSX.Element | null => {
 
   const currentQuestion = state.questionCollection[state.answerCollection.length];
 
+  if(error) {
+    throw error;
+  }
+  if (props?.error) {
+    children = renderError(props.error);
+  }
   if (!state.difficulty) {
     children = renderDifficulty();
   }
@@ -50,8 +60,7 @@ export const Quiz = (): JSX.Element | null => {
     <Paper elevation={3}>
     <Box
       className={classes.quizContainer}
-    >
-      <ErrorBoundary renderError={({error}) => renderError(error)}>{children}</ ErrorBoundary>
+    >{children}
     </Box>
     </Paper>
   );
@@ -79,6 +88,8 @@ const renderScores = () => (
   </Fade>
 );
 
-const renderError = (error: Error) => (<Fade in={true}>
-  <Alert severity="error">{`An error occured: ${error}. Reload the page to try again.`}</Alert>
+const renderError = (error: ErrorObject) => (<Fade in={true}>
+  <Alert severity="error">{`An error occured: ${error.error}. Reload the page to try again.`}</Alert>
 </Fade>)
+
+

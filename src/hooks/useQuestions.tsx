@@ -5,19 +5,25 @@ import { QuestionDTO } from '../data/QuestionDTO';
 export const useQuestions = (difficulty: DifficultyLevel, onQuestionsLoaded: (questionCollection: QuestionDTO[]) => any) => {
   const [questions, setQuestions] = React.useState<QuestionDTO[]>([]);
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
 
   React.useEffect(() => {
     async function getQuestions() {
+      try {
         setLoading(true)
         const url = `https://opentdb.com/api.php?amount=${CONFIG_NO_QUESTIONS}&amp;difficulty=${difficulty}&amp;type=boolean&encode=base64`;
         const response = await fetch(url);
         if(!response.ok) {
           const error = await handleError(response);
-          throw new Error(error?.message || error)
+          setError(error);
         }
         const {results} = await response.json();
         onQuestionsLoaded ? onQuestionsLoaded(normalizeQuestions(results)) : setQuestions(results);
-        setLoading(false);
+      } catch(err) {
+        setError(err)
+      } finally {
+        setLoading(false)
+      }
     }
 
     difficulty && getQuestions();
@@ -27,7 +33,7 @@ export const useQuestions = (difficulty: DifficultyLevel, onQuestionsLoaded: (qu
     }
   }, [difficulty])
 
-  return {loading, questions}
+  return {error, loading, questions}
 }
 
 const normalizeQuestions = (questions: any) => questions.map((question: QuestionDTO) => Object.fromEntries(Object.entries(question).map(([key, value]) => [key, Array.isArray(value) ? value.map(val => atob(val)) : atob(value as string)])))
